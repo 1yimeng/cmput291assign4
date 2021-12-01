@@ -5,26 +5,26 @@ client = MongoClient()
 
 db = client["A4dbEmbed"]
 # load and add the artist file
-collection = db['Artists']
-collection.delete_many({})
-with open('artists.json') as file:
+artistColl = db['Artists']
+artistColl.delete_many({})
+
+with open('artists.json', encoding='utf-8') as file:
     file_data = json.load(file)
-# print(file_data[0])
-print(type(file_data))
+
 l = []
 for id in file_data:
     id["_id"] = id["_id"]["$oid"]
     l.append(id)
-    
+
 if isinstance(l, list):
-    collection.insert_many(l)  
+    artistColl.insert_many(l)
 else:
-    collection.insert_one(l)
+    artistColl.insert_one(l)
 
 # load and add the track file
-Collect = db['track']
-Collect.delete_many({})
-with open('tracks.json') as file:
+trackColl = db['Tracks']
+trackColl.delete_many({})
+with open('tracks.json', encoding='utf-8') as file:
     file_data = json.load(file)
 
 l = []
@@ -33,21 +33,19 @@ for id in file_data:
     l.append(id)
 
 if isinstance(file_data, list):
-    Collect.insert_many(l)  
+    trackColl.insert_many(l)
 else:
-    Collect.insert_one(l)
+    trackColl.insert_one(l)
 
+art_tracksColl = db['ArtistsTracks']
+db.Artists.aggregate([
+    {'$lookup': {'from': 'track',
+                 'localField': 'artist_id',
+                 'foreignField': 'artist_ids',
+                 'as': 'results'}},
+    {'$out': "ArtistsTracks"}
+])  # .pretty()
 
-# collection.delete_many({})
-result = db.Artists.aggregate([{
-       '$lookup' : {'from': 'track',
-       'localField': 'artist_id',
-       'foreignField': 'artist_ids',
-       'as': 'results' }
-}])#.pretty()
-# print(type(result))
-new_collection = db['ArtistsTracks']
-# for r in result:
-#     print(r)
-# collection.delete_many({})
-new_collection.insert_many(result)
+# drop other collections
+artistColl.drop()
+trackColl.drop()
