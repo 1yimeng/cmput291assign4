@@ -9,7 +9,7 @@ from pymongo import MongoClient
 
 # Use client = MongoClient('mongodb://localhost:27017') for specific ports!
 # Connect to the default port on localhost for the mongodb server.
-client = MongoClient()
+client = MongoClient('mongodb://localhost:27012')
 
 
 # Create or open the video_store database on server.
