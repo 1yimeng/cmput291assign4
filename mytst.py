@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import json
+from bson.json_util import loads
 
 # Use client = MongoClient('mongodb://localhost:27012') for specific ports!
 # Connect to the default port on localhost for the mongodb server.
@@ -9,12 +9,12 @@ client = MongoClient('mongodb://localhost:27012')
 db = client["A4dbNorm"]
 
 with open('artists.json') as f:
-    artists = json.load(f)
+    artists = loads(f.read())
 
 # print(len(artists))
-for artist in artists:
-    id = artist["_id"]["$oid"]
-    artist["_id"] = 'ObjectId(' + id + ')'
+# for artist in artists:
+#     id = artist["_id"]["$oid"]
+#     artist["_id"] = 'ObjectId(' + id + ')'
 
 # Create or open the collection in the db
 artists_doc = db["artists"]
@@ -23,15 +23,15 @@ artists_doc.insert_many(artists)
 
 
 with open('tracks.json') as f:
-    tracks = json.load(f)
+    tracks = loads(f.read())
 
 # print(len(tracks))
 
 tracks_doc = db["tracks"]
 tracks_doc.delete_many({})
-for track in tracks:
-    id = track["_id"]["$oid"]
-    track["_id"] = 'ObjectId(' + id + ')'
+# for track in tracks:
+#     id = track["_id"]["$oid"]
+#     track["_id"] = 'ObjectId(' + id + ')'
 
 tracks_doc.insert_many(tracks)
 
