@@ -38,14 +38,20 @@ else:
     trackColl.insert_one(l)
 
 art_tracksColl = db['ArtistsTracks']
-db.Artists.aggregate([
-    {'$lookup': {'from': 'track',
-                 'localField': 'artist_id',
-                 'foreignField': 'artist_ids',
-                 'as': 'results'}},
+result = db.Artists.aggregate([
+    {'$lookup': {'from': 'Tracks',
+                 'localField': 'tracks',
+                 'foreignField': 'track_id',
+                 'as': 'tracks'}},
     {'$out': "ArtistsTracks"}
 ])  # .pretty()
 
+
+# for r in result:
+#     print(r)
+
+
+# art_tracksColl.insert_many(result)
 # drop other collections
 artistColl.drop()
 trackColl.drop()

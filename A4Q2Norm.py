@@ -1,6 +1,3 @@
-# db.tracks.aggregate([{$group:{_id: "$artist_ids", avg: {$avg: "$danceability"}}}])
-# db.tracks.find({track_id: {$regex: /^70/ }})
-
 from pymongo import MongoClient
 
 client = MongoClient('mongodb://localhost:27012')
@@ -11,6 +8,20 @@ db = client["A4dbNorm"]
 artists_doc = db["artists"]
 tracks_doc = db["tracks"]
 
+result = artists_doc.aggregate([
+    {'$lookup': {'from': 'tracks',
+                 'localField': 'tracks',
+                 'foreignField': 'track_id',
+                 'as': 'tracks'}},
+    {'$unwind':'$tracks'},
+    {'$match':{'tracks.track_id':{'$regex': "^70.*"}}},
+    {'$group':{
+        '_id':'','avg_danceability':{'$avg':'$tracks.danceability'}}
+    }
+])
+
+for i in result:
+    print(i)
 
 
 

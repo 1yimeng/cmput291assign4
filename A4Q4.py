@@ -4,7 +4,7 @@ from bson.json_util import loads
 from pymongo import collection
 import mongodb_example
 from pymongo import MongoClient
-client = MongoClient('localhost', 27017)
+client = MongoClient('mongodb://localhost:27012')
 
 # Create or open the video_store database on server.
 db = client["A4dbNorm"]
@@ -13,7 +13,7 @@ tracks_doc = db["tracks"]
 # Note: in the query 4 exapmple .datetime is used to save it
 
 tracksCursor = tracks_doc.find(
-    {"release_date": {"$gt": datetime.datetime(1950, 1, 1)}}).pretty()
+    {"release_date": {"$gt": datetime.datetime(1950, 1, 1)}})
 # newCollection = db["Tracks1"]
 for entry in tracksCursor:
     # newCollection.insertOne(tracksCursor.next())
