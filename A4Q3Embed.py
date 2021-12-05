@@ -13,7 +13,9 @@ result = art_tracksColl.aggregate(
         {"$group": {
             "_id": "$artist_id",
             "total_length": {"$sum": "$tracks.duration"}
-        }}
+        }},
+
+        {"$addFields": {"artist_id": "$_id"}}
     ]
 )
 

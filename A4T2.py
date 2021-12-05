@@ -1,51 +1,38 @@
-import json
-# import bson
 from pymongo import MongoClient
-client = MongoClient()
+from bson.json_util import loads
 
+client = MongoClient() 
+
+# Create or open the video_store database on server.
 db = client["A4dbEmbed"]
-# load and add the artist file
-artistColl = db['Artists']
-artistColl.delete_many({})
 
-with open('artists.json', encoding='utf-8') as file:
-    file_data = json.load(file)
+with open('artists.json') as f:
+    artists = loads(f.read())
 
-l = []
-for id in file_data:
-    id["_id"] = id["_id"]["$oid"]
-    l.append(id)
+# Create or open the collection in the db
+artists_doc = db["artists"]
+artists_doc.delete_many({})
+artists_doc.insert_many(artists)
 
-if isinstance(l, list):
-    artistColl.insert_many(l)
-else:
-    artistColl.insert_one(l)
 
-# load and add the track file
-trackColl = db['Tracks']
-trackColl.delete_many({})
-with open('tracks.json', encoding='utf-8') as file:
-    file_data = json.load(file)
+with open('tracks.json') as f:
+    tracks = loads(f.read())
 
-l = []
-for id in file_data:
-    id["_id"] = id["_id"]["$oid"]
-    l.append(id)
+tracks_doc = db["tracks"]
+tracks_doc.delete_many({})
+tracks_doc.insert_many(tracks)
 
-if isinstance(file_data, list):
-    trackColl.insert_many(l)
-else:
-    trackColl.insert_one(l)
 
+result = artists_doc.aggregate([
+    {'$lookup': {'from': 'tracks',
+                 'localField': 'tracks',
+                 'foreignField': 'track_id',
+                 'as': 'tracks'}},
+])
 art_tracksColl = db['ArtistsTracks']
-db.Artists.aggregate([
-    {'$lookup': {'from': 'track',
-                 'localField': 'artist_id',
-                 'foreignField': 'artist_ids',
-                 'as': 'results'}},
-    {'$out': "ArtistsTracks"}
-])  # .pretty()
+art_tracksColl.delete_many({})
+art_tracksColl.insert_many(result)
 
 # drop other collections
-artistColl.drop()
-trackColl.drop()
+artists_doc.drop()
+tracks_doc.drop()
