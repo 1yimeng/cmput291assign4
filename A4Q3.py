@@ -4,19 +4,34 @@ from bson.json_util import loads
 from pymongo import collection
 import mongodb_example
 from pymongo import MongoClient
-
-client = MongoClient('mongodb://localhost:27012')
+client = MongoClient('localhost', 27017)
 db = client["A4dbNorm"]
-artists_doc = db["artists"]
-tracks_doc = db["tracks"]
+artists_doc = db["Artists"]
+tracks_doc = db["Tracks"]
+# why did we need to do find
+Artist = artists_doc.find({})
+Tracks = tracks_doc.find({})
 
-tracks_doc.aggregate([{"$unwind": "$tracks"}])
-tracks_cursor = tracks_doc.aggregate([
-    {"$group": {
-        "_id": "artist_id",
-        "total_length": {"$sum": "$duration"}}},
-    {"artist_id": {"artist_id"}}
+artists_doc.aggregate({
+    {'$lookup': {'from': 'Tracks',
+                 'localField': 'tracks',
+                 'foreignField': 'track_id',
+                 'as': 'tracks'}
+     },
+    {"$out": "newcoll"}
+})
+newcollection = db["newcoll"]
+output = newcollection.aggregate({
+    {"$unwind": "$tracks"},
+    {
+        "$group": {
+            "_id": "$artist_ids",
+            "total_length": {"$sum": "$duration"},
+            "artist_id": {"$min": "$artist_ids"}
+        }
+    }
+})
 
-])
-for entry in tracks_cursor:
+for entry in output:
     print(entry)
+newcollection.drop()
