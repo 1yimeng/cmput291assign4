@@ -1,12 +1,12 @@
 from pymongo import MongoClient
 from bson.json_util import loads
 
-client = MongoClient() 
+client = MongoClient()
 
 # Create or open the video_store database on server.
 db = client["A4dbEmbed"]
 
-with open('artists.json') as f:
+with open('artists.json', encoding='utf-8') as f:
     artists = loads(f.read())
 
 # Create or open the collection in the db
@@ -15,7 +15,7 @@ artists_doc.delete_many({})
 artists_doc.insert_many(artists)
 
 
-with open('tracks.json') as f:
+with open('tracks.json', encoding='utf-8') as f:
     tracks = loads(f.read())
 
 tracks_doc = db["tracks"]
