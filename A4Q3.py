@@ -2,35 +2,36 @@ import pymongo
 import datetime
 from bson.json_util import loads
 from pymongo import collection
-import mongodb_example
 from pymongo import MongoClient
+
 client = MongoClient('localhost', 27017)
 db = client["A4dbNorm"]
-artists_doc = db["Artists"]
-tracks_doc = db["Tracks"]
+artists_doc = db["artists"]
+tracks_doc = db["tracks"]
 # why did we need to do find
-Artist = artists_doc.find({})
-Tracks = tracks_doc.find({})
 
-artists_doc.aggregate({
-    {'$lookup': {'from': 'Tracks',
+artists_doc.aggregate([
+    {'$lookup': {'from': 'tracks',
                  'localField': 'tracks',
                  'foreignField': 'track_id',
                  'as': 'tracks'}
      },
     {"$out": "newcoll"}
-})
+])
 newcollection = db["newcoll"]
-output = newcollection.aggregate({
+output = newcollection.aggregate([
     {"$unwind": "$tracks"},
     {
         "$group": {
-            "_id": "$artist_ids",
-            "total_length": {"$sum": "$duration"},
-            "artist_id": {"$min": "$artist_ids"}
+            "_id": "$artist_id",
+            "total_length": {"$sum": "$tracks.duration"}
+            # "artist_id": {"$min": "$artist_ids"}
         }
-    }
-})
+
+
+    },
+    {"$addFields": {"artist_id": "$_id"}}
+])
 
 for entry in output:
     print(entry)
