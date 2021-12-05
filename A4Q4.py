@@ -2,7 +2,6 @@ import pymongo
 import datetime
 from bson.json_util import loads
 from pymongo import collection
-import mongodb_example
 from pymongo import MongoClient
 client = MongoClient('localhost', 27017)
 
@@ -11,10 +10,13 @@ db = client["A4dbNorm"]
 Artists = db["artists"]
 Tracks = db["tracks"]
 newCollection = Artists.aggregate([
+    {'$lookup': {'from': 'tracks',
+                 'localField': 'tracks',
+                 'foreignField': 'track_id',
+                 'as': 'tracks'}},
     {'$unwind': '$tracks'},
-    {'$lookup': {'from': 'Tracks'},
-     '$match': {"$eq": ["$tracks", "$track_id"],
-                "$gt": ["$release_date", datetime.datetime(1950, 1, 1)]}},
+    {'$match': {"tracks.release_date": {
+        "$gt": datetime.datetime(1950, 1, 1)}}},
     {"$project": {"_id": "$_id", "name": "$name", "t_name": "$tracks.name",
                   "t_release_date": "$tracks.release_date"}}
 

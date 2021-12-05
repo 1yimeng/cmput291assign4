@@ -11,11 +11,11 @@ result = art_tracksColl.aggregate(
         {"$unwind": "$tracks"},
 
         {"$match": {  # datetime.datetime(1950, 1, 1)
-            "$tracks.release_date": {"$gt": datetime.datetime(1950, 1, 1)}}
+            "tracks.release_date": {"$gt": datetime.datetime(1950, 1, 1)}}
          },
 
         {"$project": {
-            "_id": "$tracks._id",
+            "_id": "$_id",
             "name": "$name",
             "t_name": "$tracks.name",
             "t_release_date": "$tracks.release_date"
