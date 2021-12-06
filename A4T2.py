@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from bson.json_util import loads
 
-client = MongoClient()
+client = MongoClient('localhost', 27017)
 db = client["A4dbEmbed"]
 
 with open('artists.json', encoding='utf-8') as f:
