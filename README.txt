@@ -1,6 +1,6 @@
 Group Number:12
-ccids:xiaoyi9
-Names:Elsa Xiaoyi Chen
+ccids:xiaoyi9, rjellis
+Names:Elsa Xiaoyi Chen, Rachel Ellis
 Contribution:
 
 Versions:
