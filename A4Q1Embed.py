@@ -2,14 +2,20 @@ from pymongo import MongoClient
 client = MongoClient()
 
 db = client["A4dbEmbed"]
-artiststracks = db['ArtistsTracks']
+art_tracksColl = db['ArtistsTracks']
 
-add_numtracks = { "$addFields": {"num_tracks": { "$size": "$tracks"}}}
 
-projection = {"$project" : { "artist_id": 1, "name": 1, "num_tracks": 1}}
+output = art_tracksColl.aggregate([
+    {"$addFields": {
+        "num_tracks": {"$size": "$tracks"}
+    }},
+    {"$project": {
+        "artist_id": 1,
+        "name": 1,
+        "num_tracks": 1
+    }}
+])
 
-numtrack_return = artiststracks.aggregate([add_numtracks, projection])
-
-for x in numtrack_return:
-    if x["num_tracks"] >= 1:
-        print(x)
+for entry in output:
+    if entry["num_tracks"] >= 1:
+        print(entry)

@@ -1,17 +1,17 @@
 from pymongo import MongoClient
-client = MongoClient()
+
+client = MongoClient('localhost', 27017)
 
 db = client["A4dbEmbed"]
-artiststracks = db['ArtistsTracks']
+art_tracksColl = db['ArtistsTracks']
 
-cursor = artiststracks.aggregate([
-    {'$unwind':'$tracks'},
-    {'$match':{'tracks.track_id':{'$regex': "^70.*"}}},
-    {'$group':{
-        '_id':'','avg_danceability':{'$avg':'$tracks.danceability'}}
-    }
-    ])
+output = art_tracksColl.aggregate([
+    {'$unwind': '$tracks'},
+    {'$match': {'tracks.track_id': {'$regex': "^70.*"}}},
+    {'$group': {
+        '_id': '', 'avg_danceability': {'$avg': '$tracks.danceability'}
+    }}
+])
 
- 
-for document in cursor:
-    print(document)
+for entry in output:
+    print(entry)
