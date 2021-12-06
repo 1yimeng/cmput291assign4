@@ -1,8 +1,10 @@
 from pymongo import MongoClient
 from bson.json_util import loads
 
-# Use client = MongoClient('mongodb://localhost:27012') for specific ports!
-# Connect to the default port on localhost for the mongodb server.
+import sys
+
+sys.stdout.reconfigure(encoding = "utf-8")
+
 client = MongoClient('localhost', 27017)
 db = client["A4dbNorm"]
 

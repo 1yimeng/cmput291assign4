@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 from bson.json_util import loads
+import sys
 
+sys.stdout.reconfigure(encoding = "utf-8")
 client = MongoClient('localhost', 27017)
 db = client["A4dbEmbed"]
 
