@@ -4,8 +4,6 @@ from bson.json_util import loads
 # Use client = MongoClient('mongodb://localhost:27012') for specific ports!
 # Connect to the default port on localhost for the mongodb server.
 client = MongoClient()
-
-# Create or open the video_store database on server.
 db = client["A4dbNorm"]
 
 with open('artists.json', encoding='utf-8') as f:

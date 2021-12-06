@@ -2,8 +2,6 @@ from pymongo import MongoClient
 from bson.json_util import loads
 
 client = MongoClient()
-
-# Create or open the video_store database on server.
 db = client["A4dbEmbed"]
 
 with open('artists.json', encoding='utf-8') as f:
@@ -29,6 +27,7 @@ result = artists_doc.aggregate([
                  'foreignField': 'track_id',
                  'as': 'tracks'}},
 ])
+
 art_tracksColl = db['ArtistsTracks']
 art_tracksColl.delete_many({})
 art_tracksColl.insert_many(result)
